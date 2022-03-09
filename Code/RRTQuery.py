@@ -70,6 +70,8 @@ while len(rrtVertices)<3000 and not FoundSolution:
 
 	angs = mybot.SampleRobotConfig()
 
+	if np.random.uniform(0, 1) < 0.07: angs = qGoal # goal bias
+
 	# find nearest
 	idx = FindNearest(rrtVertices, angs)
 	new_point = rrtVertices[idx]
