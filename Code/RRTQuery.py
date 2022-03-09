@@ -115,7 +115,23 @@ if FoundSolution:
 
 	# TODO - Path shortening
 	for i in range(150):
-		pass
+		idxA = np.random.randint(0, len(plan)-2)
+		idxB = np.random.randint(idxA, len(plan)-1)
+
+		moveA = np.random.uniform(0, 1) # move ratio along edge
+		moveB = np.random.uniform(0, 1)
+
+		newA = plan[idxA] + list(moveA*(np.array(plan[idxA+1] - plan[idxA]))) # /np.linalg.norm(np.array(plan[idxA+1] - plan[idxA]))
+		newB = plan[idxB] + list(moveB*(np.array(plan[idxB+1] - plan[idxB]))) # /np.linalg.norm(np.array(plan[idxB+1] - plan[idxB]))
+
+		if not mybot.DetectCollisionEdge(newA, newB, pointsObs, axesObs):
+			while idxB >= idxA:
+				plan.pop(idxA)
+				idxB -= 1
+			plan.insert(idxA, newB)
+			plan.insert(idxA, newA)
+
+
 
 		
 	robot=vpi.vBot()
