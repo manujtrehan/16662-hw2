@@ -230,7 +230,7 @@ class Locobot:
 
 
 	def DetectCollisionEdge(self, ang1, ang2, pointsObs, axesObs):
-		for s in np.linspace(0,1,5): #The number of steps along the edge may need to be adapted
+		for s in np.linspace(0,1,30): #The number of steps along the edge may need to be adapted
 			ang= [ang1[k]+s*(ang2[k]-ang1[k]) for k in range(len(ang1))] 	
 
 			self.CompCollisionBlockPoints(ang)

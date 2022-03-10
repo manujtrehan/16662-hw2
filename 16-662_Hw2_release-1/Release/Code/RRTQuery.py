@@ -12,7 +12,7 @@ def FindNearest(prevPoints,newPoint):
 	return D.argmin()
 
 
-np.random.seed(0)
+np.random.seed(1234)
 deg_to_rad = np.pi/180.
 
 #Initialize robot object
@@ -58,44 +58,49 @@ qGoal=[0., 60*deg_to_rad, -75*deg_to_rad, -75*deg_to_rad, 0.]
 rrtVertices=[]
 rrtEdges=[]
 
-rrtVertices.append(qInit)
+rrtVertices.append(np.array(qInit))
 rrtEdges.append(0)
 
-thresh=2
-stopping_thresh = 2
+thresh=0.25
+stopping_thresh = 0.6
 FoundSolution=False
 
-while len(rrtVertices)<3000 and not FoundSolution:
+while len(rrtVertices)<3500 and not FoundSolution:
 	print(len(rrtVertices))
 
-	angs = mybot.SampleRobotConfig()
+	angs = np.array(mybot.SampleRobotConfig())
 
-	if np.random.uniform(0, 1) < 0.07: angs = qGoal # goal bias
+	if np.random.uniform(0, 1) < 0.1: angs = qGoal # goal bias
 
 	# find nearest
 	idx = FindNearest(rrtVertices, angs)
-	new_point = rrtVertices[idx]
-	old_point = rrtVertices[idx]
+	near_point = rrtVertices[idx]
+	old_point = near_point.copy()
+	# print("=====================")
+	# while np.linalg.norm(np.array(angs) - near_point) > thresh:
+		# print(np.linalg.norm(np.array(angs) - near_point))
+	# keep extending near_point until obstacle or angs
+	if np.linalg.norm(np.array(angs) - near_point) > thresh:
+		angs = near_point + thresh*(np.array(angs) - near_point)/np.linalg.norm(np.array(angs) - near_point)
 
-	while np.linalg.norm(np.array(angs) - np.array(new_point)) > stopping_thresh:
-		# keep extending new_point until obstacle or angs
-		new_point += thresh*(np.array(angs) - np.array(new_point))/np.linalg.norm(np.array(angs) - np.array(new_point))
+	# check collisions
+	if mybot.DetectCollision(angs, pointsObs, axesObs): continue # break
+	if mybot.DetectCollisionEdge(near_point, angs, pointsObs, axesObs): continue # break
 
-		# check collisions
-		if mybot.DetectCollision(new_point, pointsObs, axesObs): break
-		if mybot.DetectCollisionEdge(old_point, new_point, pointsObs, axesObs): break
-
-		old_point = new_point
+	# old_point = near_point
 	
-	# if old_point == rrtVertices[idx]: continue # no steps were taken, sample another point
-
-	rrtVertices.append(old_point)
+	# if np.linalg.norm(old_point - rrtVertices[idx]) < thresh/10: continue # no steps were taken, sample another point np.array_equal(old_point, rrtVertices[idx])
+	# print("added")
+	rrtVertices.append(angs)
 	rrtEdges.append(idx)
 
 	# check if near goal
-	if(np.linalg.norm(np.array(qGoal) - np.array(old_point)) < stopping_thresh):
+	if np.linalg.norm(np.array(qGoal) - angs) < stopping_thresh:
+		rrtVertices.append(np.array(qGoal))
+		rrtEdges.append(len(rrtEdges)-1)
 		FoundSolution = True
-		break
+		print("Found")
+		# break
 			
 
 
@@ -114,22 +119,22 @@ if FoundSolution:
 			break
 
 	# TODO - Path shortening
-	# for i in range(150):
-	# 	idxA = np.random.randint(0, len(plan)-2)
-	# 	idxB = np.random.randint(idxA, len(plan)-1)
+	for i in range(150):
+		idxA = np.random.randint(0, len(plan)-2)
+		idxB = np.random.randint(idxA, len(plan)-1)
 
-	# 	moveA = np.random.uniform(0, 1) # move ratio along edge
-	# 	moveB = np.random.uniform(0, 1)
+		moveA = np.random.uniform(0, 1) # move ratio along edge
+		moveB = np.random.uniform(0, 1)
 
-	# 	newA = plan[idxA] + list(moveA*(np.array(plan[idxA+1] - plan[idxA]))) # /np.linalg.norm(np.array(plan[idxA+1] - plan[idxA]))
-	# 	newB = plan[idxB] + list(moveB*(np.array(plan[idxB+1] - plan[idxB]))) # /np.linalg.norm(np.array(plan[idxB+1] - plan[idxB]))
+		newA = plan[idxA] + moveA*(plan[idxA+1] - plan[idxA]) # /np.linalg.norm(plan[idxA+1] - plan[idxA])
+		newB = plan[idxB] + moveB*(plan[idxB+1] - plan[idxB]) # /np.linalg.norm(plan[idxB+1] - plan[idxB])
 
-	# 	if not mybot.DetectCollisionEdge(newA, newB, pointsObs, axesObs):
-	# 		while idxB >= idxA:
-	# 			plan.pop(idxA)
-	# 			idxB -= 1
-	# 		plan.insert(idxA, newB)
-	# 		plan.insert(idxA, newA)
+		if not mybot.DetectCollisionEdge(newA, newB, pointsObs, axesObs):
+			while idxB >= idxA:
+				plan.pop(idxA)
+				idxB -= 1
+			plan.insert(idxA, newB)
+			plan.insert(idxA, newA)
 
 
 
