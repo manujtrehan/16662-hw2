@@ -42,7 +42,8 @@ class vBot:
 		for i in range(15):
 			t=min(i,12.)/12.
 			vrep.simxPauseCommunication(self.clientID,1);
-			for j in xrange(5):
+			# for j in xrange(5):
+			for j in range(5):
 				vrep.simxSetJointTargetPosition(self.clientID,self.JointHandles[j], (1.0-t)*CurJointPosition[j]+t*DesJointPosition[j],vrep.simx_opmode_oneshot)
 			vrep.simxPauseCommunication(self.clientID,0);
 			for step in range(3):

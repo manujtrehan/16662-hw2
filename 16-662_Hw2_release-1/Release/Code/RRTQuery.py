@@ -61,8 +61,8 @@ rrtEdges=[]
 rrtVertices.append(qInit)
 rrtEdges.append(0)
 
-thresh=0.25
-stopping_thresh = 0.1
+thresh=2
+stopping_thresh = 2
 FoundSolution=False
 
 while len(rrtVertices)<3000 and not FoundSolution:
@@ -77,9 +77,9 @@ while len(rrtVertices)<3000 and not FoundSolution:
 	new_point = rrtVertices[idx]
 	old_point = rrtVertices[idx]
 
-	while(np.linalg.norm(np.array(angs - new_point)) > stopping_thresh):
+	while np.linalg.norm(np.array(angs) - np.array(new_point)) > stopping_thresh:
 		# keep extending new_point until obstacle or angs
-		new_point += list(thresh*(np.array(angs - new_point)/np.linalg.norm(np.array(angs - new_point))))
+		new_point += thresh*(np.array(angs) - np.array(new_point))/np.linalg.norm(np.array(angs) - np.array(new_point))
 
 		# check collisions
 		if mybot.DetectCollision(new_point, pointsObs, axesObs): break
@@ -87,13 +87,13 @@ while len(rrtVertices)<3000 and not FoundSolution:
 
 		old_point = new_point
 	
-	if old_point == rrtVertices[idx]: continue # no steps were taken, sample another point
+	# if old_point == rrtVertices[idx]: continue # no steps were taken, sample another point
 
 	rrtVertices.append(old_point)
 	rrtEdges.append(idx)
 
 	# check if near goal
-	if(np.linalg.norm(np.array(qGoal - old_point)) < stopping_thresh):
+	if(np.linalg.norm(np.array(qGoal) - np.array(old_point)) < stopping_thresh):
 		FoundSolution = True
 		break
 			
