@@ -61,8 +61,8 @@ rrtEdges=[]
 rrtVertices.append(np.array(qInit))
 rrtEdges.append(0)
 
-thresh=0.25
-stopping_thresh = 0.3
+thresh = 0.1 # 0.25
+stopping_thresh = 0.15 # 0.3
 FoundSolution=False
 
 while len(rrtVertices)<3000 and not FoundSolution:
@@ -94,7 +94,7 @@ while len(rrtVertices)<3000 and not FoundSolution:
 	# if mybot.DetectCollisionEdge(near_point, angs, pointsObs, axesObs): continue
 
 	
-	# if np.linalg.norm(old_point - rrtVertices[idx]) < thresh/10: continue # no steps were taken, sample another point np.array_equal(old_point, rrtVertices[idx])
+	# if np.linalg.norm(old_point - rrtVertices[idx]) < thresh/10: continue # no steps were taken, sample another point
 	# print("added")
 	
 	# rrtVertices.append(angs)
