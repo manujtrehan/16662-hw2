@@ -65,7 +65,7 @@ thresh=0.25
 stopping_thresh = 0.6
 FoundSolution=False
 
-while len(rrtVertices)<3500 and not FoundSolution:
+while len(rrtVertices)<3000 and not FoundSolution:
 	print(len(rrtVertices))
 
 	angs = np.array(mybot.SampleRobotConfig())
