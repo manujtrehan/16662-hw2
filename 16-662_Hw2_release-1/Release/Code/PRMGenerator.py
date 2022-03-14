@@ -50,7 +50,17 @@ start = time.time()
 while len(prmVertices)<1000:
 	# sample random poses 
 	print(len(prmVertices))
-	
+
+	angs = np.array(mybot.SampleRobotConfig())
+	if not mybot.DetectCollision(angs, pointsObs, axesObs):
+		prmVertices.append(angs)
+		prmEdges.append([])
+		for idx, val in enumerate(prmVertices[:-1]):
+			if np.linalg.norm(angs - val) <= 2:
+				# valid neighbour
+				if not mybot.DetectCollisionEdge(val, angs, pointsObs, axesObs, 25):
+					prmEdges[-1].append(idx)
+					prmEdges[idx].append(len(prmEdges)-1)
 
 
 

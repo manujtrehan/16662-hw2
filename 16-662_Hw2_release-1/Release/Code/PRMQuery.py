@@ -86,6 +86,7 @@ MyPlan.append(qGoal)
 
 robot=vpi.vBot()
 robot.connect()
+time.sleep(1)
 
 for q in MyPlan:
 	robot.move(q)

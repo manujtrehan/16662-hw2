@@ -62,7 +62,7 @@ rrtVertices.append(np.array(qInit))
 rrtEdges.append(0)
 
 thresh = 0.1 # 0.25
-stopping_thresh = 0.15 # 0.3
+stopping_thresh = 0.2 # 0.3
 FoundSolution=False
 
 while len(rrtVertices)<3000 and not FoundSolution:
@@ -108,6 +108,7 @@ while len(rrtVertices)<3000 and not FoundSolution:
 		rrtEdges.append(len(rrtEdges)-1)
 		FoundSolution = True
 		print("Found")
+		# time.sleep(3)
 		# break
 			
 
@@ -149,6 +150,7 @@ if FoundSolution:
 		
 	robot=vpi.vBot()
 	robot.connect()
+	time.sleep(1)
 	
 	for q in plan:
 		robot.move(q)
